@@ -47,7 +47,7 @@ void app_main(void) {
 
             setPWM(duty);
 
-            printf("duty: %d ", duty);
+            printf("duty: %lu ", duty);
         }
 
         // Handle freq
@@ -63,7 +63,7 @@ void app_main(void) {
 
             setFreq(freq);
 
-            printf("freq: %d ", freq);
+            printf("freq: %lu ", freq);
         }
 
         printf("                                         \r");
