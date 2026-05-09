@@ -103,7 +103,7 @@ void initADC() {
     isCalibratedForFreq = example_adc_calibration_init(ADC_unit, ADC_channel_freq, attenuation, &adc1CalibrationDescrFreq);
 }
 
-uint32_t get_voltage_mV(uint8_t channel) {
+int get_voltage_mV(uint8_t channel) {
     int adcRawValue = 0;
     int voltage = 0;
 

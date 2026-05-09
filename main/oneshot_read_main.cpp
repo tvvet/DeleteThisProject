@@ -36,14 +36,14 @@ extern "C" void app_main(void) {
         // Це все потрібно виносити в функції і т.д. але на це немає ні часу ні потреби ускладнювати та систематизувати в рамках прототипу.
         // Handle duty
         {
-            uint32_t mV = get_voltage_mV(0);
+            int mV = get_voltage_mV(0);
 
             mV = constrain(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV);
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedDuty = handleDuty(normalizedVoltage, period);
+            constrain(normalizedDuty, 0, 1.f);
             uint32_t duty = mapFloat(normalizedDuty, 0.0f, 1.0f, 0.0f, MAX_DUTY);
-            constrain(duty, 0, MAX_DUTY);
 
             setPWM(duty);
 
@@ -52,14 +52,14 @@ extern "C" void app_main(void) {
 
         // Handle freq
         {
-            uint32_t mV = get_voltage_mV(1);
+            int mV = get_voltage_mV(1);
 
             mV = constrain(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV);
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedFreq = handleFreq(normalizedVoltage, period);
+            constrain(normalizedFreq, 0, 1.f);
             uint32_t freq = mapFloat(normalizedFreq, 0.0f, 1.0f, MIN_FREQ, MAX_FREQ);
-            constrain(freq, MIN_FREQ, MAX_FREQ);
 
             setFreq(freq);
 
