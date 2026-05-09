@@ -26,7 +26,7 @@ inline uint32_t constrain(uint32_t val, uint32_t from, uint32_t to) {
 float handleDuty(float normalized, float dt);
 float handleFreq(float normalized, float dt);
 
-void app_main(void) {
+extern "C" void app_main(void) {
     initPWM();
     initADC();
 
@@ -42,8 +42,8 @@ void app_main(void) {
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedDuty = handleDuty(normalizedVoltage, period);
-            constrain(normalizedDuty, 0, 1.f);
             uint32_t duty = mapFloat(normalizedDuty, 0.0f, 1.0f, 0.0f, MAX_DUTY);
+            constrain(duty, 0, MAX_DUTY);
 
             setPWM(duty);
 
@@ -58,15 +58,15 @@ void app_main(void) {
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedFreq = handleFreq(normalizedVoltage, period);
-            constrain(normalizedFreq, 0, 1.f);
             uint32_t freq = mapFloat(normalizedFreq, 0.0f, 1.0f, MIN_FREQ, MAX_FREQ);
+            constrain(freq, MIN_FREQ, MAX_FREQ);
 
             setFreq(freq);
 
             printf("freq: %lu ", freq);
         }
 
-        printf("                                          \r"); //change
+        printf("                                          \r");
         
         vTaskDelay(pdMS_TO_TICKS(periodMs));
     }   
