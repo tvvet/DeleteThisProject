@@ -63,6 +63,7 @@ void app_main(void) {
 
             setFreq(freq);
 
+            int a = 0;
             printf("freq: %lu ", freq);
         }
 
