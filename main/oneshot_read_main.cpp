@@ -77,6 +77,21 @@ extern "C" void app_main(void) {
 // Це твоя основна функція, при написанні тут коду роби вид що всього що вище не існує. Те що вище залишено для наглядності як це працює.
 // Повенути нормалізоване duty
 float handleDuty(float normalized, float dt) {
+float middleDuty=0.5f;
+float deadDuty=0.1f;
+if normalized <=middleDuty - deadDuty {
+   return mapFloat(mV1, 0,middleDuty-deadDuty, -1.0f, 0.0f);
+}
+else if normalized >= middleDuty = deadDuty {
+   return mapFloat(mV1, middleDuty+deadDuty,1, 0.0f, 1.0f);
+}
+else {
+    return 0.0f;
+}
+
+}
+inline float mapFloat(float x, float in_min, float in_max, float out_min, float out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     /* Тут можеш реалізувати будь яку обробку нормалізованого сигналу. 
     Тобі байдуже який у нього був діапазон, зараз він від 0 до 1
     В тебе є час з минулої обробки сигналу в секундах щоб було згідно системи СІ
