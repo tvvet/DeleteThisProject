@@ -22,5 +22,5 @@ const char *TAG = "EXAMPLE"; // Змінна яка використовуєть
 #define VOLTAGE_MIN_MV          500
 #define VOLTAGE_MAX_MV          2000
 #define periodMs                20
-#define MIN_FREQ                5
+#define MIN_FREQ                5 // За розрахунком при 14 bit resolution це мінімальна частота і при частоті нижче буде помилка. 
 #define MAX_FREQ                1000
