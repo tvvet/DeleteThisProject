@@ -6,7 +6,7 @@
 #define LEDC_OUTPUT_IO          (8) // номер GPIO який ми застосовуємо
 #define LEDC_CHANNEL            LEDC_CHANNEL_0 // Номер канала ШИМ
 #define LEDC_DUTY_RES           LEDC_TIMER_14_BIT // Розрядність ШИМ
-#define MAX_DUTY                8191
+#define MAX_DUTY                (1u << LEDC_DUTY_RES) - 1
 #define LEDC_FREQUENCY          (4000) // Частота ШИМ.
 
 // ADC settings
@@ -22,5 +22,5 @@ const char *TAG = "EXAMPLE"; // Змінна яка використовуєть
 #define VOLTAGE_MIN_MV          500
 #define VOLTAGE_MAX_MV          2000
 #define periodMs                20
-#define MIN_FREQ                1
+#define MIN_FREQ                5
 #define MAX_FREQ                1000

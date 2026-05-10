@@ -66,7 +66,8 @@ extern "C" void app_main(void) {
             printf("freq: %lu ", freq);
         }
 
-        printf("                                          \r");
+        // printf("                                          \r"); // Затираємо старі символи та повертаємо каретку на початок рядку.
+        printf("\n");
         
         vTaskDelay(pdMS_TO_TICKS(periodMs));
     }   

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 #include "driver/ledc.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +17,10 @@
 #include "esp_adc/adc_cali_scheme.h"
 #include "settings.h"
 
+#ifdef __cplusplus
+    }
+#endif
+
 static adc_oneshot_unit_handle_t adc1Descr;
 static adc_cali_handle_t adc1CalibrationDescrDuty = NULL;
 static adc_cali_handle_t adc1CalibrationDescrFreq = NULL;
@@ -20,16 +28,21 @@ static bool isCalibratedForDuty = false;
 static bool isCalibratedForFreq = false;
 
 void initPWM() {
-    ledc_timer_config_t ledc_timer;
+    /* Тут по можму не догляду була помилка, я просто перейшов з Designated Initializers на класичну інціалізацію, 
+    але відінність в тому що класична залишає сміття якщо не вказані стандартні значення, 
+    а так як в С їх немає то там просто залишилалось сміття.
+    Тому зараз іструктура інцціалізується нулями через пустий список цніціалізації (uniform initialization) а потім доповнюється значеннями*/
+    ledc_timer_config_t ledc_timer {};
     ledc_timer.speed_mode       = LEDC_MODE;
     ledc_timer.duty_resolution  = LEDC_DUTY_RES;
     ledc_timer.timer_num        = LEDC_TIMER;
     ledc_timer.freq_hz          = LEDC_FREQUENCY;
     ledc_timer.clk_cfg          = LEDC_AUTO_CLK;
 
-    ledc_timer_config(&ledc_timer);
+    ESP_ERROR_CHECK(
+    ledc_timer_config(&ledc_timer));
 
-    ledc_channel_config_t ledc_channel;
+    ledc_channel_config_t ledc_channel {};
     ledc_channel.speed_mode     = LEDC_MODE;
     ledc_channel.channel        = LEDC_CHANNEL;
     ledc_channel.timer_sel      = LEDC_TIMER;
@@ -38,12 +51,15 @@ void initPWM() {
     ledc_channel.duty           = 0;
     ledc_channel.hpoint         = 0;
 
-    ledc_channel_config(&ledc_channel);
+    ESP_ERROR_CHECK(
+    ledc_channel_config(&ledc_channel));
 }
 
 void setPWM(uint32_t duty) {
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty);
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL);
+    ESP_ERROR_CHECK(
+    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty));
+    ESP_ERROR_CHECK(
+    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
 }
 
 /*
@@ -52,7 +68,8 @@ void setPWM(uint32_t duty) {
 Для зменшення мінімальної частоти потрібно також змінювати джерело тактування або ж робити програмний ШИМ через пееривання.
 */
 void setFreq(uint32_t freq) {
-    ESP_ERROR_CHECK(ledc_set_freq(LEDC_MODE, LEDC_TIMER, freq));
+    ESP_ERROR_CHECK(
+    ledc_set_freq(LEDC_MODE, LEDC_TIMER, freq));
 }
 
 static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle) {
@@ -85,21 +102,24 @@ static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel,
 
 void initADC() {
     // Config ADC unit
-    adc_oneshot_unit_init_cfg_t init_config1;
+    adc_oneshot_unit_init_cfg_t init_config1 {};
     init_config1.unit_id = ADC_unit;
-    adc_oneshot_new_unit(&init_config1, &adc1Descr);
+    ESP_ERROR_CHECK(
+    adc_oneshot_new_unit(&init_config1, &adc1Descr));
 
     // Channel config for both
-    adc_oneshot_chan_cfg_t config;
+    adc_oneshot_chan_cfg_t config {};
     config.atten = attenuation;
     config.bitwidth = ADC_BITWIDTH_DEFAULT;
 
     // Unique config for duty
-    adc_oneshot_config_channel(adc1Descr, ADC_channel_duty, &config);
+    ESP_ERROR_CHECK(
+    adc_oneshot_config_channel(adc1Descr, ADC_channel_duty, &config));
     isCalibratedForDuty = example_adc_calibration_init(ADC_unit, ADC_channel_duty, attenuation, &adc1CalibrationDescrDuty);
 
     // Unique config for freq
-    adc_oneshot_config_channel(adc1Descr, ADC_channel_freq, &config);
+    ESP_ERROR_CHECK(
+    adc_oneshot_config_channel(adc1Descr, ADC_channel_freq, &config));
     isCalibratedForFreq = example_adc_calibration_init(ADC_unit, ADC_channel_freq, attenuation, &adc1CalibrationDescrFreq);
 }
 
@@ -109,18 +129,22 @@ int get_voltage_mV(uint8_t channel) {
 
     switch(channel) {
         case 0:
-            adc_oneshot_read(adc1Descr, ADC_channel_duty, &adcRawValue); 
+            ESP_ERROR_CHECK(
+            adc_oneshot_read(adc1Descr, ADC_channel_duty, &adcRawValue)); 
 
             if (isCalibratedForDuty) {
-                adc_cali_raw_to_voltage(adc1CalibrationDescrDuty, adcRawValue, &voltage);
+                ESP_ERROR_CHECK(
+                adc_cali_raw_to_voltage(adc1CalibrationDescrDuty, adcRawValue, &voltage));
             } 
 
             break;
         case 1:
-            adc_oneshot_read(adc1Descr, ADC_channel_freq, &adcRawValue); 
+            ESP_ERROR_CHECK(
+            adc_oneshot_read(adc1Descr, ADC_channel_freq, &adcRawValue)); 
 
             if (isCalibratedForFreq) {
-                adc_cali_raw_to_voltage(adc1CalibrationDescrFreq, adcRawValue, &voltage);
+                ESP_ERROR_CHECK(
+                adc_cali_raw_to_voltage(adc1CalibrationDescrFreq, adcRawValue, &voltage));
             }
             
             break;
@@ -130,6 +154,8 @@ int get_voltage_mV(uint8_t channel) {
 }
 
 void deinitADC() {
-    adc_cali_delete_scheme_curve_fitting(adc1CalibrationDescrDuty);
-    adc_cali_delete_scheme_curve_fitting(adc1CalibrationDescrFreq);
+    ESP_ERROR_CHECK(
+    adc_cali_delete_scheme_curve_fitting(adc1CalibrationDescrDuty));
+    ESP_ERROR_CHECK(
+    adc_cali_delete_scheme_curve_fitting(adc1CalibrationDescrFreq));
 }
