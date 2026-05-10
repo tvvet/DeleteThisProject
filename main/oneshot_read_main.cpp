@@ -79,19 +79,18 @@ extern "C" void app_main(void) {
 float handleDuty(float normalized, float dt) {
 float middleDuty=0.5f;
 float deadDuty=0.1f;
-if normalized <=middleDuty - deadDuty {
-   return mapFloat(mV1, 0,middleDuty-deadDuty, -1.0f, 0.0f);
+if (normalized <=middleDuty - deadDuty) {
+   return mapFloat(normalized, 0,middleDuty-deadDuty, -1.0f, 0.0f);
 }
-else if normalized >= middleDuty = deadDuty {
-   return mapFloat(mV1, middleDuty+deadDuty,1, 0.0f, 1.0f);
+else if (normalized >= middleDuty + deadDuty) {
+   return mapFloat(normalized, middleDuty+deadDuty,1, 0.0f, 1.0f);
 }
 else {
     return 0.0f;
 }
 
 }
-inline float mapFloat(float x, float in_min, float in_max, float out_min, float out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+
     /* Тут можеш реалізувати будь яку обробку нормалізованого сигналу. 
     Тобі байдуже який у нього був діапазон, зараз він від 0 до 1
     В тебе є час з минулої обробки сигналу в секундах щоб було згідно системи СІ
@@ -99,8 +98,7 @@ inline float mapFloat(float x, float in_min, float in_max, float out_min, float 
     Тому тобі байдуже на все що відбувається зовні цієї функції, ти навіть не знаєш про ESP IDF, тут чиста логіка, чистий С
     Так тобі буде простіше почати щось писати, не думаючи взагалі не про які інші деталі реалізації програми*/
 
-    return normalized;
-}
+
 
 float handleFreq(float normalized, float dt) {
     // Тут можна наприклад зробити логірифмічну зміну значень частоти для плавного керування на низьких частотах та великого діапазону до 20-25 кГц
