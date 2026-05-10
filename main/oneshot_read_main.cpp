@@ -47,7 +47,7 @@ extern "C" void app_main(void) {
 
             setPWM(duty);
 
-            printf("duty: %lu ", duty);
+            printf(">duty: %lu\n", duty);
         }
 
         // Handle freq
@@ -63,11 +63,10 @@ extern "C" void app_main(void) {
 
             setFreq(freq);
 
-            printf("freq: %lu ", freq);
+            printf(">freq: %lu \n", freq);
         }
 
         // printf("                                          \r"); // Затираємо старі символи та повертаємо каретку на початок рядку.
-        printf("\n");
         
         vTaskDelay(pdMS_TO_TICKS(periodMs));
     }   
