@@ -28,10 +28,24 @@ static bool isCalibratedForDuty = false;
 static bool isCalibratedForFreq = false;
 
 void initPWM() {
-    /* Тут по можму не догляду була помилка, я просто перейшов з Designated Initializers на класичну інціалізацію, 
-    але відінність в тому що класична залишає сміття якщо не вказані стандартні значення, 
-    а так як в С їх немає то там просто залишилалось сміття.
-    Тому зараз іструктура інцціалізується нулями через пустий список цніціалізації (uniform initialization) а потім доповнюється значеннями*/
+    /* Тут по мойму не догляду була помилка, я просто перейшов з Designated Initializers на класичну інціалізацію, 
+    але відмінність в тому що класична ініціалізація залишає сміття якщо не вказані стандартні значення в структурі, 
+    а так як в С їх не має то там просто залишилалось сміття.
+    Тому зараз структура ініціалізується нулями через пустий список ініціалізації (uniform initialization) а потім доповнюється значеннями
+    
+    Для розуміння прикладів інціалізації, все це валідно:
+    int a = 5 // Copy init
+    int a (5) // Я не памятаю як це називається
+    int a {5} // Uniform init / список ініціалізації, точно не скажу бо суті не змінює.
+
+    int a[5]; // Залишає сміття в масиві (ніяк не ініціалізує його)
+    int a[5] {0}; або int a[5] {10}; // Ініцалізує масив вказаним значенням 
+    int a[5] {}; // те саме що й int a[5] {0};
+    int a[5] {1, 2, 3, 4, 5} // Список ініціалізації
+
+    Все це більше розкривається з обєктами і там кожна з них має окремі нюанси хоча все й схоже на те як це працює зі змінними та масивами.
+    За все по цій темі розповіати зараз я не буду бо і сам не памятаю всих нюансів, якщо потрібно то спросиш AI. 
+    */
     ledc_timer_config_t ledc_timer {};
     ledc_timer.speed_mode       = LEDC_MODE;
     ledc_timer.duty_resolution  = LEDC_DUTY_RES;
@@ -72,7 +86,7 @@ void setFreq(uint32_t freq) {
     ledc_set_freq(LEDC_MODE, LEDC_TIMER, freq));
 }
 
-static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle) {
+bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle) {
     adc_cali_handle_t handle = NULL;
     esp_err_t ret = ESP_FAIL;
     bool calibrated = false;
@@ -84,6 +98,7 @@ static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel,
         .bitwidth = ADC_BITWIDTH_DEFAULT,
     };
     ret = adc_cali_create_scheme_curve_fitting(&cali_config, &handle);
+    
     if (ret == ESP_OK) {
         calibrated = true;
     }
