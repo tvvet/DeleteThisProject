@@ -24,3 +24,7 @@ const char *TAG = "EXAMPLE"; // Змінна яка використовуєть
 #define periodMs                20
 #define MIN_FREQ                5 // За розрахунком при 14 bit resolution це мінімальна частота і при частоті нижче буде помилка. 
 #define MAX_FREQ                1000
+
+// Handle signal
+#define middleDuty              0.5f
+#define deadDuty                0.1f
