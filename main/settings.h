@@ -3,7 +3,7 @@
 // PWM settings
 #define LEDC_TIMER              LEDC_TIMER_0 // Номер таймера
 #define LEDC_MODE               LEDC_LOW_SPEED_MODE // Це точно не знаю що робе але для esp32-c3 безальтернативно
-#define LEDC_OUTPUT_IO          (8) // номер GPIO який ми застосовуємо
+#define LEDC_OUTPUT_IO          (2) // номер GPIO який ми застосовуємо
 #define LEDC_CHANNEL            LEDC_CHANNEL_0 // Номер канала ШИМ
 #define LEDC_DUTY_RES           LEDC_TIMER_14_BIT // Розрядність ШИМ
 #define MAX_DUTY                (1u << LEDC_DUTY_RES) - 1
