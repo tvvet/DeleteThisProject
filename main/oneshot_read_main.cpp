@@ -16,9 +16,9 @@ inline float mapFloat(float x, float in_min, float in_max, float out_min, float 
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-inline uint32_t constrain(uint32_t val, uint32_t from, uint32_t to) {
-    if(val < from) val = from;
-    if(val > to) val = to;
+inline uint32_t constrain(const uint32_t val, const uint32_t from, const uint32_t to) {
+    if(val < from) return from;
+    if(val > to) return to;
     return val;
 }
 
@@ -42,7 +42,7 @@ extern "C" void app_main(void) {
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedDuty = handleDuty(normalizedVoltage, period);
-            constrain(normalizedDuty, 0, 1.f);
+            normalizedDuty = constrain(normalizedDuty, 0, 1.f);
             uint32_t duty = mapFloat(normalizedDuty, 0.0f, 1.0f, 0.0f, MAX_DUTY);
 
             setPWM(duty);
@@ -58,15 +58,13 @@ extern "C" void app_main(void) {
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedFreq = handleFreq(normalizedVoltage, period);
-            constrain(normalizedFreq, 0, 1.f);
+            normalizedFreq = constrain(normalizedFreq, 0, 1.f);
             uint32_t freq = mapFloat(normalizedFreq, 0.0f, 1.0f, MIN_FREQ, MAX_FREQ);
 
             setFreq(freq);
 
             printf(">freq: %lu \n", freq);
         }
-
-        // printf("                                          \r"); // Затираємо старі символи та повертаємо каретку на початок рядку.
         
         vTaskDelay(pdMS_TO_TICKS(periodMs));
     }   
@@ -77,28 +75,19 @@ extern "C" void app_main(void) {
 // Це твоя основна функція, при написанні тут коду роби вид що всього що вище не існує. Те що вище залишено для наглядності як це працює.
 // Повенути нормалізоване duty
 float handleDuty(float normalized, float dt) {
-float middleDuty=0.5f;
-float deadDuty=0.1f;
-if (normalized <=middleDuty - deadDuty) {
-   return mapFloat(normalized, 0,middleDuty-deadDuty, -1.0f, 0.0f);
-}
-else if (normalized >= middleDuty + deadDuty) {
-   return mapFloat(normalized, middleDuty+deadDuty,1, 0.0f, 1.0f);
-}
-else {
-    return 0.0f;
-}
+    float deadzoneMin = middleDuty - deadDuty;
+    float deadzoneMax = middleDuty + deadDuty;
 
+    if (normalized <= deadzoneMin) {
+        return mapFloat(normalized, 0, deadzoneMin, -1.0f, 0.0f);
+    }
+    else if (normalized >= deadzoneMax) {
+        return mapFloat(normalized, deadzoneMax, 1, 0.0f, 1.0f);
+    }
+    else {
+        return 0.0f;
+    }
 }
-
-    /* Тут можеш реалізувати будь яку обробку нормалізованого сигналу. 
-    Тобі байдуже який у нього був діапазон, зараз він від 0 до 1
-    В тебе є час з минулої обробки сигналу в секундах щоб було згідно системи СІ
-    Повертаєш ти нормалізоване значення вихідного сигналу, тому тобі байдуже який в нього діапазон, для тебе він від 0 до 1
-    Тому тобі байдуже на все що відбувається зовні цієї функції, ти навіть не знаєш про ESP IDF, тут чиста логіка, чистий С
-    Так тобі буде простіше почати щось писати, не думаючи взагалі не про які інші деталі реалізації програми*/
-
-
 
 float handleFreq(float normalized, float dt) {
     // Тут можна наприклад зробити логірифмічну зміну значень частоти для плавного керування на низьких частотах та великого діапазону до 20-25 кГц

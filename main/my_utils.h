@@ -27,17 +27,112 @@ static adc_cali_handle_t adc1CalibrationDescrFreq = NULL;
 static bool isCalibratedForDuty = false;
 static bool isCalibratedForFreq = false;
 
+
+//////////////////// ПРИКЛАДИ ////////////////////////
+
+// Створимо структуру для Кольору.
+struct RGB {
+    unsigned char R;
+    unsigned char G;
+    unsigned char B;
+};
+
+// Створимо структуру для Координат.
+struct Coordinate {
+    unsigned int X;
+    unsigned int Y;
+};
+
+// Створимо структуру для Пікселя.
+struct Pixel {
+    Coordinate coord;
+    RGB color;
+};
+
+// Просто заглушки, максимум що можеш подивитись тут це як передаються аргументи. Так само як і зазвичай але замість стандартного типу тип нашої структури
+bool isPixelOnMonitorBorder(Coordinate coord) { return true; };
+struct HSV {};
+HSV RGBtoHSV(RGB color) { return HSV{}; };
+bool isPixelValid(Pixel pixel, unsigned int width, unsigned int height) {return true; };
+
+void exampleFunc() {
+    /* Якщо не дивись урок про структури то поясню письмово щоб було наглядніше
+    Наприклад у нас є екран ПК. У нього є пікселі. У пікселя є 2 координати та 3 світлодіода.
+    Як ми це представимо в програмі? Ну наприклад так: */
+    int width = 1920;
+    int height = 1080;
+    int pixelNum = width * height;
+
+    {
+        unsigned char R[pixelNum];
+        unsigned char G[pixelNum];
+        unsigned char B[pixelNum];
+        unsigned int X[pixelNum];
+        unsigned int Y[pixelNum];
+    }
+
+    // Або так:
+    {
+        unsigned char R[pixelNum];
+        unsigned char G[pixelNum];
+        unsigned char B[pixelNum];
+        unsigned int Coordinate[height][width];
+    }
+
+    /* Наче навіть краще. Спробуємо зробити ще краще та зрозуміліше. 
+    Створюємо наш масив обєктів пікселів, див. оголошення Pixel вище або через f12 */
+    Pixel pixel[pixelNum];
+
+    /* Це все, 1 строка в коді замість 4-5 логічно не звязаних змінних в рамках мови.
+    По суті ми просто логічно в рамках мови обєднали всі ці змінні 
+    і показали що вони повинні оброблятись в певних умовах як характеристики одного обєкта.
+    Це стовсується кожної структури окремо. Наприклад: */
+    
+    // Приклади використання. Використовуємо для приклада 101-ий піксель в якого індекс 100
+    bool onBorder = isPixelOnMonitorBorder(pixel[100].coord);
+    HSV hsvColorScheme = RGBtoHSV(pixel[100].color); // Умовно в нас є тип для кольорової схеми HSV (здається так називається, див. вікіпедію)
+    /* Перевіряє щоб піксель був в рамках монітору та мав діапазон кольору 0-255 
+    (хоча це гарантується 1 байтним типом данних...ну просто можемо допустити щось подібне, я хз що в кольорі можна перевірити на валідність) */
+    const unsigned int maxMonitorWidth = 1280;
+    const unsigned int maxMonitorHeight = 720;
+    bool validPixel = isPixelValid(pixel[100], maxMonitorWidth, maxMonitorHeight);
+    
+    /* Таким чином ми передаємо в функції згруповані дані замість 2-5 розрізнених змінних які можливо переплутати.
+    А з точки зору оптимізації ми можемо передати просто вказівник на структуру а не 4-5 копій/вказівників на змінні.
+    Варто зауважити що інсують випадки коли для гнучкості відмовляються від певного рівня (концептуально) структур але це вже зовсім інша історія.
+
+    В мові С структури створюються дещо з іншим синтаксисом але суть та сама. */
+}
+
+
 void initPWM() {
-    /* Тут по можму не догляду була помилка, я просто перейшов з Designated Initializers на класичну інціалізацію, 
-    але відінність в тому що класична залишає сміття якщо не вказані стандартні значення, 
-    а так як в С їх немає то там просто залишилалось сміття.
-    Тому зараз іструктура інцціалізується нулями через пустий список цніціалізації (uniform initialization) а потім доповнюється значеннями*/
+    /* Тут по мойму не догляду була помилка, я просто перейшов з Designated Initializers на класичну інціалізацію, 
+    але відмінність в тому що класична ініціалізація залишає сміття якщо не вказані стандартні значення в структурі, 
+    а так як в С їх не має то там просто залишилалось сміття.
+    Тому зараз структура ініціалізується нулями через пустий список ініціалізації (uniform initialization) а потім доповнюється значеннями
+    
+    Для розуміння прикладів інціалізації, все це валідно: */
+    {
+        int a = 5; // Copy init
+        int b (5); // Я не памятаю як це називається
+        int c {5}; // Uniform init / список ініціалізації, точно не скажу бо суті не змінює.
+
+        // Ініціалізація масивів
+        int d[5]; // Залишає сміття в масиві (ніяк не ініціалізує його)
+        int e[5] {0}; // або int a[5] {10}; // Ініцалізує масив вказаним значенням 
+        int f[5] {}; // те саме що й int a[5] {0};
+        int g[5] {1, 2, 3, 4, 5}; // Список ініціалізації
+    }
+
+    /* Все це більше розкривається з обєктами і там кожна з них має окремі нюанси хоча все й схоже на те як це працює зі змінними та масивами.
+    За все по цій темі розповіати зараз я не буду бо і сам не памятаю всих нюансів, якщо потрібно то спросиш AI. */
+
     ledc_timer_config_t ledc_timer {};
     ledc_timer.speed_mode       = LEDC_MODE;
     ledc_timer.duty_resolution  = LEDC_DUTY_RES;
     ledc_timer.timer_num        = LEDC_TIMER;
     ledc_timer.freq_hz          = LEDC_FREQUENCY;
-    ledc_timer.clk_cfg          = LEDC_AUTO_CLK;
+    ledc_timer.clk_cfg          = LEDC_USE_RC_FAST_CLK; // 8 МГц частота мб.
 
     ESP_ERROR_CHECK(
     ledc_timer_config(&ledc_timer));
@@ -72,7 +167,7 @@ void setFreq(uint32_t freq) {
     ledc_set_freq(LEDC_MODE, LEDC_TIMER, freq));
 }
 
-static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle) {
+bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle) {
     adc_cali_handle_t handle = NULL;
     esp_err_t ret = ESP_FAIL;
     bool calibrated = false;
@@ -84,6 +179,7 @@ static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel,
         .bitwidth = ADC_BITWIDTH_DEFAULT,
     };
     ret = adc_cali_create_scheme_curve_fitting(&cali_config, &handle);
+    
     if (ret == ESP_OK) {
         calibrated = true;
     }
