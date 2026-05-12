@@ -132,7 +132,7 @@ void initPWM() {
     ledc_timer.duty_resolution  = LEDC_DUTY_RES;
     ledc_timer.timer_num        = LEDC_TIMER;
     ledc_timer.freq_hz          = LEDC_FREQUENCY;
-    ledc_timer.clk_cfg          = LEDC_AUTO_CLK;
+    ledc_timer.clk_cfg          = LEDC_USE_RC_FAST_CLK; // 8 МГц частота мб.
 
     ESP_ERROR_CHECK(
     ledc_timer_config(&ledc_timer));
