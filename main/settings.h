@@ -7,7 +7,7 @@
 #define LEDC_CHANNEL            LEDC_CHANNEL_0 // Номер канала ШИМ
 #define LEDC_DUTY_RES           LEDC_TIMER_14_BIT // Розрядність ШИМ
 #define MAX_DUTY                (1u << LEDC_DUTY_RES) - 1
-#define LEDC_FREQUENCY          (4000) // Частота ШИМ.
+#define LEDC_FREQUENCY          (1000) // Частота ШИМ.
 
 // ADC settings
 #define ADC_unit                ADC_UNIT_1 // Яка апаратна ADC оберається для налаштування
@@ -22,7 +22,7 @@ const char *TAG = "EXAMPLE"; // Змінна яка використовуєть
 #define VOLTAGE_MIN_MV          500
 #define VOLTAGE_MAX_MV          2000
 #define periodMs                20
-#define MIN_FREQ                5 // За розрахунком при 14 bit resolution це мінімальна частота і при частоті нижче буде помилка. 
+#define MIN_FREQ                2 // За розрахунком при 14 bit resolution це мінімальна частота і при частоті нижче буде помилка. 
 #define MAX_FREQ                1000
 
 // Handle signal
