@@ -16,7 +16,8 @@ inline float mapFloat(float x, float in_min, float in_max, float out_min, float 
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-inline uint32_t constrain(const uint32_t val, const uint32_t from, const uint32_t to) {
+template<typename T>
+inline T constrain(const T val, const T from, const T to) {
     if(val < from) return from;
     if(val > to) return to;
     return val;
@@ -42,7 +43,7 @@ extern "C" void app_main(void) {
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedDuty = handleDuty(normalizedVoltage, period);
-            normalizedDuty = constrain(normalizedDuty, 0, 1.f);
+            normalizedDuty = constrain(normalizedDuty, .0f, 1.f);
             uint32_t duty = mapFloat(normalizedDuty, 0.0f, 1.0f, 0.0f, MAX_DUTY);
 
             setPWM(duty);
@@ -58,7 +59,7 @@ extern "C" void app_main(void) {
             float normalizedVoltage = mapFloat(mV, VOLTAGE_MIN_MV, VOLTAGE_MAX_MV, 0.0f, 1.0f);
 
             float normalizedFreq = handleFreq(normalizedVoltage, period);
-            normalizedFreq = constrain(normalizedFreq, 0, 1.f);
+            normalizedFreq = constrain(normalizedFreq, .0f, 1.f);
             uint32_t freq = mapFloat(normalizedFreq, 0.0f, 1.0f, MIN_FREQ, MAX_FREQ);
 
             setFreq(freq);
